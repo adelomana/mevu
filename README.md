@@ -1,2 +1,2 @@
-# ccvb
-Computational tools for studying cells.
+# mevu
+Computational tools to study metabolic vulnerabilities.
