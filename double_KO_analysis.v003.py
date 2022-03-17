@@ -9,7 +9,7 @@ from multiprocessing import Process, Queue
 
 def essential_genes_retriever(simulation_folder):
 
-    print(simulation_folder, end=' ')
+    #print(simulation_folder, end=' ')
 
     pairs = {}
 
@@ -54,9 +54,9 @@ def printt(message):
 #
 number_of_threads = 18
 
-simulation_dir = '/home/adrian/projects/endomevu/data/hpc_results/constrained/double_KO/deployments/'
-model_file = '/home/adrian/projects/endomevu/data/model/Recon3DModel_301.mat'
-heatmap_info_file = '/home/adrian/projects/endomevu/results/heatmap.doubleKO.pickle'
+simulation_dir = '/home/adrian/projects/vinland/data/hpc_results/constrained/double_KO/deployments/'
+model_file = '/home/adrian/projects/vinland/data/model/Recon3DModel_301.mat'
+heatmap_info_file = '/home/adrian/projects/vinland/results/heatmap.doubleKO.pickle'
 
 #
 # 1. read and simulate the model
@@ -76,7 +76,10 @@ printt('biomass {}'.format(original_growth_value))
 simulation_folders = next(os.walk(simulation_dir))[1]
 simulation_folders.sort()
 
-printt('entering a parallel world')
+simulation_folders = simulation_folders[:20]
+
+
+printt('entering a parallel world of {} threads'.format(number_of_threads))
 hydra = multiprocessing.pool.Pool(number_of_threads)
 hydra_output = hydra.map(essential_genes_retriever, simulation_folders)
 hydra.close()
@@ -97,13 +100,13 @@ for result in hydra_output:
             else:
                 conditional_essentiality[pair].append(condition_name)
 
-
 #
 # 4. store dictionary of pairs containing conditions where they are essential
 #
 printt('store essential gene pairs and their conditions')
-for pair in list(conditional_essentiality.keys())[:100]:
-    print(pair, len(conditional_essentiality[pair]))
+for pair in list(conditional_essentiality.keys())[:20]:
+    conditional_essentiality_prob = len(conditional_essentiality[pair])/len(simulation_folders)
+    print(pair, conditional_essentiality[pair][:4], len(conditional_essentiality[pair]), conditional_essentiality_prob)
 
 f = open(heatmap_info_file,'wb')
 pickle.dump(conditional_essentiality, f)
