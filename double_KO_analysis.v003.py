@@ -1,3 +1,8 @@
+#
+# INFO: this script reads the double KO simulations run at BSC and generates a pickle with a dictionary with the conditions where a pair was essential.
+#
+
+
 import os, pickle, cobra, datetime
 
 import multiprocessing, multiprocessing.pool
@@ -75,9 +80,7 @@ printt('biomass {}'.format(original_growth_value))
 #
 simulation_folders = next(os.walk(simulation_dir))[1]
 simulation_folders.sort()
-
-simulation_folders = simulation_folders[:20]
-
+simulation_folders = simulation_folders[:200] # @ 20 threads: 200 folders takes xx
 
 printt('entering a parallel world of {} threads'.format(number_of_threads))
 hydra = multiprocessing.pool.Pool(number_of_threads)
@@ -104,10 +107,15 @@ for result in hydra_output:
 # 4. store dictionary of pairs containing conditions where they are essential
 #
 printt('store essential gene pairs and their conditions')
-for pair in list(conditional_essentiality.keys())[:20]:
-    conditional_essentiality_prob = len(conditional_essentiality[pair])/len(simulation_folders)
-    print(pair, conditional_essentiality[pair][:4], len(conditional_essentiality[pair]), conditional_essentiality_prob)
 
 f = open(heatmap_info_file,'wb')
 pickle.dump(conditional_essentiality, f)
 f.close()
+
+#
+# 5. extra messages
+#
+printt('extra messages')
+for pair in list(conditional_essentiality.keys())[:100]:
+    conditional_essentiality_prob = len(conditional_essentiality[pair])/len(simulation_folders)
+    print(pair, conditional_essentiality[pair][:4], len(conditional_essentiality[pair]), conditional_essentiality_prob)
