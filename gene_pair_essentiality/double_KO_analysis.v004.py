@@ -1,5 +1,8 @@
 #
-# INFO: this script reads the double KO simulations run at BSC and generates a pickle with a dictionary with the conditions where a pair was essential.
+# INFO
+# This script reads the double KO simulations run at BSC.
+# Then it generates a pickle with a dictionary with the conditions where a pair was essential.
+# The computational time of this script in a 18 thread environment is ~ 25 min.
 #
 
 
@@ -80,7 +83,7 @@ printt('biomass {}'.format(original_growth_value))
 #
 simulation_folders = next(os.walk(simulation_dir))[1]
 simulation_folders.sort()
-simulation_folders = simulation_folders[:200] # @ 20 threads: 200 folders takes xx
+printt('working with {} simulations'.format(len(simulation_folders)))
 
 printt('entering a parallel world of {} threads'.format(number_of_threads))
 hydra = multiprocessing.pool.Pool(number_of_threads)
